@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Beneficios W</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Import SheetJS for Excel files -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --main-bg: #fff;
+            --box-bg: #f8f9fb;
+            --border-radius: 18px;
+            --shadow: 0 6px 18px rgba(0,0,0,0.11);
+            --accent: #4a90e2;
+            --font: 'Segoe UI', sans-serif;
+            --soft-black: #232323;
+        }
+        html, body {
+            margin: 0; padding: 0;
+            background: var(--main-bg);
+            font-family: var(--font);
+            color: var(--soft-black);
+            min-height: 100vh;
+        }
+        .centered-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--main-bg);
+        }
+        .box {
+            background: var(--box-bg);
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            padding: 2rem 2rem 1.5rem 2rem;
+            width: 95vw;
+            max-width: 370px;
+            margin: 1rem auto;
+        }
+        .brand-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.6rem;
+        }
+        .brand-header img {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 0.5rem;
+            user-select: none;
+        }
+        h1.title {
+            font-size: 2.1rem;
+            color: #232323;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            line-height: 1.2;
+        }
+        form label {
+            font-weight: 500;
+            margin-bottom: 7px;
+            color: #232323;
+            display: block;
+        }
+        .input-group {
+            margin-bottom: 1.1rem;
+        }
+        input[type="text"], input[type="password"], select {
+            padding: 0.7em 1em;
+            font-size: 1.05rem;
+            width: 100%;
+            border: 1.3px solid #e3e3e3;
+            margin-top: 4px;
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            outline: none;
+            background: #fff;
+            box-shadow: 0 1px 7px 0 #f0f1f680;
+        }
+        button, .button {
+            display: inline-block;
+            background: var(--accent);
+            color: #fff;
+            padding: 0.7em 1.5em;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.08rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 3px 8px #c1d8ef38;
+            transition: filter 0.18s;
+            margin-top: 8px;
+        }
+        button:active, .button:active { filter: brightness(0.96); }
+        .logout-btn {
+            background: #c0c0c0;
+            color: #232323;
+            float: right;
+            font-size: 0.98rem;
+            padding: 0.6em 1.2em;
+            margin-top: 0;
+            margin-left: 8px;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 8px #bbb5b538;
+        }
+        .logout-btn:active { filter: brightness(0.94);}
+        .error-message {
+            color: #e14;
+            margin-bottom: 0.7rem;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #23963b;
+            text-align: center;
+            margin-bottom: 1.1rem;
+        }
+
+        /* Ticket styles */
+        .ticket {
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: left;
+            word-break: break-word;
+        }
+        .ticket-title {
+            text-align: center;
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 1.18rem;
+            margin-bottom: 14px;
+        }
+        .summary-box {
+            margin: 1.5rem 0 0 0;
+            background: #fafcdf;
+            border: 1.1px solid #f6edad;
+            padding: 1.1rem;
+            border-radius: var(--border-radius);
+            color: #5d4b0c;
+            font-size: 1.01rem;
+            box-shadow: 0 2px 10px #f7edc098;
+        }
+        /* Admin Section */
+        .admin-section {
+            background: var(--box-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.7rem 1rem;
+            margin: 2rem auto 1.5rem auto;
+            max-width: 550px;
+        }
+        .dashboard-section {
+            background: #f5f8fd;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 14px #e1edfc55;
+            padding: 1.2rem 0.6rem 1rem 0.6rem;
+            margin: 20px 0 0 0;
+        }
+        .dashboard-title {
+            text-align: center;
+            color: var(--accent);
+            font-size: 1.18rem;
+            font-weight: bold;
+            margin-bottom: 1.2rem;
+        }
+        .dashboard-totals {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            gap: 12px;
+        }
+        .dashboard-total {
+            background: #fff;
+            color: #222;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px #e8e8e880;
+            padding: 1em 2em;
+            min-width: 100px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .dashboard-list-section {
+            margin-top: 1.4rem;
+        }
+        .dashboard-list-section h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--accent);
+            font-size: 1.05rem;
+        }
+        ul.dashboard-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            font-size: 0.97rem;
+            color: #333;
+        }
+        ul.dashboard-list li {
+            padding: 5px 0 5px 10px;
+            border-bottom: 1px solid #f0f0f6;
+        }
+        ul.dashboard-list li:last-child { border-bottom: none; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.2rem 0 0.5rem 0;
+        }
+        th, td {
+            padding: 0.6em 0.5em;
+            text-align: left;
+            border-bottom: 1px solid #ececec;
+            font-size: 1rem;
+            border-radius: var(--border-radius);
+        }
+        th {
+            background: #ebf4fc;
+            color: #37557d;
+            font-weight: 600;
+        }
+        tr:last-child td { border-bottom: none; }
+
+        @media (max-width: 600px) {
+            .box, .admin-section {
+                padding: 0.9rem 0.6rem 1rem 0.6rem;
+                max-width: 95vw;
+            }
+            h1.title { font-size: 1.35rem; }
+            th, td { font-size: 0.95rem; }
+            .dashboard-totals { flex-direction: column; align-items: center;}
+            .dashboard-total { min-width: 95vw; }
+        }
+    </style>
+</head>
+<body>
+<div class="centered-container" id="main-container">
+    <div class="box" id="login-box">
+        <div class="brand-header">
+            <img src="/descarga.png" alt="Logo W Hotels">
+        </div>
+        <h1 class="title">Beneficios W</h1>
+        <form id="login-form" autocomplete="off">
+            <div class="input-group">
+                <label>RUT:</label>
+                <input type="text" name="rut" id="rut-input" maxlength="12" placeholder="12345678-9" required pattern="\d{7,8}-[\dkK]">
+            </div>
+            <div class="input-group">
+                <label>Contraseña:</label>
+                <input type="password" name="password" id="password-input" maxlength="4" placeholder="4 primeros dígitos del RUT" required>
+            </div>
+            <div class="error-message" id="login-error" style="display:none;"></div>
+            <button type="submit">Ingresar</button>
+        </form>
+    </div>
+
+    <div class="box" id="user-box" style="display:none;">
+        <button class="logout-btn" id="logout-btn-user">Cerrar sesión</button>
+        <div class="brand-header">
+            <img src="/descarga.png" alt="Logo W Hotels">
+        </div>
+        <h1 class="title">Bienvenido/a, <span id="user-name"></span></h1>
+        <div id="solicitud-section">
+            <form id="solicitud-form">
+                <div class="input-group">
+                    <label>¿Qué servicio deseas solicitar?</label>
+                    <select id="servicio-select" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Desayuno">Desayuno</option>
+                        <option value="Almuerzo">Almuerzo</option>
+                        <option value="Cena">Cena</option>
+                    </select>
+                </div>
+                <button type="submit">Solicitar Servicio</button>
+            </form>
+            <div id="solicitud-error" class="error-message" style="display:none;"></div>
+            <div id="ticket-container"></div>
+        </div>
+    </div>
+
+    <!-- Admin Section -->
+    <div class="admin-section" id="admin-panel" style="display:none;">
+        <button class="logout-btn" id="logout-btn-admin">Cerrar sesión</button>
+        <div class="brand-header">
+            <img src="/descarga.png" alt="Logo W Hotels">
+        </div>
+        <h1 class="title">Panel Administración</h1>
+
+        <!-- Admin puede solicitar alimentos -->
+        <div class="box" style="max-width:440px; margin: 10px auto 20px auto; box-shadow:0 3px 19px #dceffd60;">
+            <div style="font-size:1.04rem; font-weight:500; margin-bottom:7px; text-align:center;">
+                Solicitud de alimento (Administrador)
+            </div>
+            <form id="admin-solicitud-form">
+                <div class="input-group">
+                    <label>¿Qué servicio deseas solicitar?</label>
+                    <select id="admin-servicio-select" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Desayuno">Desayuno</option>
+                        <option value="Almuerzo">Almuerzo</option>
+                        <option value="Cena">Cena</option>
+                    </select>
+                </div>
+                <button type="submit">Solicitar Servicio</button>
+            </form>
+            <div id="admin-solicitud-error" class="error-message" style="display:none;"></div>
+            <div id="admin-ticket-container"></div>
+        </div>
+
+        <!-- Dashboard Inicio -->
+        <div class="dashboard-section">
+            <div class="dashboard-title">Dashboard de Consumos</div>
+            <div class="dashboard-totals" id="dashboard-totals">
+              <!-- llenado JS -->
+            </div>
+            <div class="dashboard-list-section">
+                <h4>Trabajadores que han consumido <span id="dashboard-servicio-tipo">Desayuno</span> hoy:</h4>
+                <select id="dashboard-servicio-select" style="margin-bottom:10px; border:1px solid #d4e0f1;">
+                    <option value="Desayuno">Desayuno</option>
+                    <option value="Almuerzo">Almuerzo</option>
+                    <option value="Cena">Cena</option>
+                </select>
+                <ul class="dashboard-list" id="dashboard-list">
+                  <!-- llenado JS -->
+                </ul>
+            </div>
+        </div>
+        <!-- Dashboard Fin -->
+
+        <div>
+            <form id="upload-form">
+                <label>Subir listado de autorizados (Excel):</label>
+                <input type="file" id="excel-input" accept=".xlsx,.xls" required>
+                <button style="margin-top:7px;" type="submit">Cargar Lista</button>
+            </form>
+            <div class="success-message" id="admin-success" style="display:none;"></div>
+            <div class="error-message" id="admin-error" style="display:none;"></div>
+        </div>
+
+        <div class="summary-box" style="display:none;" id="admin-summary"></div>
+
+        <div style="margin:12px 0;">
+            <button id="download-excel-btn" disabled>Descargar registros (Excel)</button>
+        </div>
+
+        <table id="resume-table" style="display:none;">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>RUT</th>
+                <th>Cargo</th>
+                <th>Servicio</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Registros aquí -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+/* Estado global simple */
+let usuariosAutorizados = [];     // [{nombre, rut, cargo }]
+let registrosSolicitudes = [];    // [{nombre, rut, cargo, servicio, fecha, hora}]
+let usuarioActual = null;         // {nombre, rut, cargo}
+
+const ADMIN_RUT = '16322387-2';
+
+function normalizaRut(rut) {
+    let r = rut.trim().toUpperCase();
+    r = r.replace(/[^\dkK\-]/g, ''); // Solo 0-9,k y -
+    return r;
+}
+
+function primeros4Rut(rut){
+    // Obtener solo dígitos del RUT antes del guión
+    let core = rut.split('-')[0];
+    return core.substring(0, 4);
+}
+
+/* MOVER A UN MODULO SI SE ESCALA */
+function cargarUsuariosDesdeExcel(data) {
+    // SheetJS lee el archivo como array de json
+    // Debe tener campos: "NOMBRE", "RUT", "CARGO" (mayúsculas)
+    usuariosAutorizados = [];
+    data.forEach((row) => {
+        if(row['RUT'] && row['NOMBRE'] && row['CARGO']){
+            usuariosAutorizados.push({
+                nombre: (row['NOMBRE']||'').toString().trim(),
+                rut: normalizaRut(row['RUT']),
+                cargo: (row['CARGO']||'').toString().trim()
+            });
+        }
+    });
+}
+
+function usuarioPorRut(rut){
+    rut = normalizaRut(rut);
+    // Si es admin, construir usuario especial
+    if (rut === ADMIN_RUT) return {nombre: 'Administrador', rut, cargo: 'Administrador'};
+    return usuariosAutorizados.find(u => normalizaRut(u.rut) === rut) || null;
+}
+
+function puedeSolicitarHoy(rut, servicio) {
+    // Solo una solicitud por rut+servicio+fecha
+    const hoy = (new Date()).toISOString().substr(0,10);
+    return !registrosSolicitudes.some(r =>
+        normalizaRut(r.rut) === normalizaRut(rut) &&
+        r.servicio === servicio &&
+        r.fecha === hoy
+    );
+}
+
+function registrarSolicitud(usuario, servicio) {
+    const now = new Date();
+    const fecha = now.toISOString().substr(0,10);
+    const hora  = now.toTimeString().substr(0,5);
+    const reg = {
+        nombre: usuario.nombre,
+        rut: usuario.rut,
+        cargo: usuario.cargo,
+        servicio,
+        fecha,
+        hora
+    };
+    registrosSolicitudes.push(reg);
+    // Persistencia simple en memoria local:
+    try { localStorage.setItem('registrosSolicitudes', JSON.stringify(registrosSolicitudes)); } catch(e){}
+}
+
+function mostrarTicket(usuario, servicio, target="ticket-container") {
+    const now = new Date();
+    const fecha = now.toLocaleDateString();
+    const hora = now.toTimeString().substr(0,5);
+    document.getElementById(target).innerHTML = `
+        <div class="ticket">
+            <div class="ticket-title">Ticket Digital ${servicio}</div>
+            <b>Nombre:</b> ${usuario.nombre}<br>
+            <b>RUT:</b> ${usuario.rut}<br>
+            <b>Cargo:</b> ${usuario.cargo}<br>
+            <b>Servicio:</b> ${servicio}<br>
+            <b>Fecha:</b> ${fecha}<br>
+            <b>Hora:</b> ${hora}
+        </div>
+    `;
+}
+
+/* ---------- Login Handler ---------- */
+document.getElementById('login-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const rut = normalizaRut(document.getElementById('rut-input').value);
+    const password = document.getElementById('password-input').value;
+
+    document.getElementById('login-error').style.display = 'none';
+
+    if (!rut.match(/^\d{7,8}-[\dkK]$/)) {
+        showError('login-error', "Formato de RUT inválido.");
+        return;
+    }
+
+    let usuario = usuarioPorRut(rut);
+    if(!usuario){
+        showError('login-error', "Usuario no autorizado.");
+        return;
+    }
+    // Validar 4 primeros dígitos
+    if(password !== primeros4Rut(rut)){
+        showError('login-error', "Contraseña incorrecta.");
+        return;
+    }
+    usuarioActual = usuario;
+    if(usuario.rut === ADMIN_RUT){
+        mostrarAdminPanel();
+    }else{
+        mostrarUsuarioPanel(usuario);
+    }
+});
+
+/* ------- LOGOUT IMPLEMENTATION ----------- */
+function cerrarSesion(){
+    usuarioActual = null;
+    document.getElementById('login-box').style.display = '';
+    document.getElementById('user-box').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('rut-input').value = '';
+    document.getElementById('password-input').value = '';
+    document.getElementById('login-error').style.display = 'none';
+}
+document.getElementById('logout-btn-user').addEventListener('click', function(e){
+    e.preventDefault();
+    cerrarSesion();
+});
+document.getElementById('logout-btn-admin').addEventListener('click', function(e){
+    e.preventDefault();
+    cerrarSesion();
+});
+/* ----------------------------------------- */
+
+function mostrarUsuarioPanel(usuario){
+    document.getElementById('login-box').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('user-box').style.display = '';
+    document.getElementById('user-name').textContent = usuario.nombre;
+    document.getElementById('ticket-container').innerHTML = '';
+    document.getElementById('solicitud-error').style.display = 'none';
+    document.getElementById('solicitud-form').reset();
+}
+
+/* ---------- Solicitud Handler ---------- */
+
+document.getElementById('solicitud-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const servicio = document.getElementById('servicio-select').value;
+    const errorBox = document.getElementById('solicitud-error');
+    if(!servicio){
+        showError('solicitud-error', "Seleccione un servicio.");
+        return;
+    }
+    if(!puedeSolicitarHoy(usuarioActual.rut, servicio)){
+        showError('solicitud-error', "Solo puede solicitar " + servicio + " una vez al día.");
+        return;
+    }
+    registrarSolicitud(usuarioActual, servicio);
+    mostrarTicket(usuarioActual, servicio, "ticket-container");
+    errorBox.style.display = 'none';
+    recargarDashboardAdmin();
+    recargarTablaAdmin();
+    // Option: disable further submits for today
+    document.getElementById('solicitud-form').reset();
+});
+
+/* --------- Admin puede solicitar servicio --------- */
+document.getElementById('admin-solicitud-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const servicio = document.getElementById('admin-servicio-select').value;
+    const errorBox = document.getElementById('admin-solicitud-error');
+    if(!servicio){
+        showError('admin-solicitud-error', "Seleccione un servicio.");
+        return;
+    }
+    if(!puedeSolicitarHoy(ADMIN_RUT, servicio)){
+        showError('admin-solicitud-error', "Solo puede solicitar " + servicio + " una vez al día.");
+        return;
+    }
+    registrarSolicitud(usuarioActual, servicio);
+    mostrarTicket(usuarioActual, servicio, "admin-ticket-container");
+    errorBox.style.display = 'none';
+    recargarDashboardAdmin();
+    recargarTablaAdmin();
+    document.getElementById('admin-solicitud-form').reset();
+});
+/* ------------------------------------------------- */
+
+/* ---------- Admin Panel ---------- */
+
+function mostrarAdminPanel() {
+    document.getElementById('login-box').style.display = 'none';
+    document.getElementById('user-box').style.display = 'none';
+    document.getElementById('admin-panel').style.display = '';
+    document.getElementById('admin-ticket-container').innerHTML = '';
+    document.getElementById('admin-solicitud-error').style.display = 'none';
+    document.getElementById('admin-solicitud-form').reset();
+    recargarTablaAdmin();
+    recargarDashboardAdmin();
+}
+
+document.getElementById('upload-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const fileInput = document.getElementById('excel-input');
+    const errorBox = document.getElementById('admin-error');
+    const successBox = document.getElementById('admin-success');
+    errorBox.style.display = 'none';
+    successBox.style.display = 'none';
+
+    if(fileInput.files.length === 0){
+        showError('admin-error', "Seleccione un archivo.");
+        return;
+    }
+    const f = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = function(evt){
+        try {
+            const data = new Uint8Array(evt.target.result);
+            const wb = XLSX.read(data, {type:'array'});
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(ws, {defval:""});
+            cargarUsuariosDesdeExcel(json);
+            try { localStorage.setItem('usuariosAutorizados', JSON.stringify(usuariosAutorizados)); } catch(e){}
+            document.getElementById('admin-summary').textContent = `Lista cargada: ${usuariosAutorizados.length} usuarios autorizados.`;
+            document.getElementById('admin-summary').style.display = '';
+            showSuccess('admin-success', "Lista cargada exitosamente.");
+        } catch(e){
+            showError('admin-error', "Archivo inválido o formato no soportado.");
+            return;
+        }
+    }
+    reader.readAsArrayBuffer(f);
+});
+
+document.getElementById('download-excel-btn').addEventListener('click', function(){
+    // Exportar registrosSolicitudes a Excel
+    if(registrosSolicitudes.length === 0) return;
+    const ws = XLSX.utils.json_to_sheet(registrosSolicitudes,{
+        header: ['nombre', 'rut', 'cargo', 'servicio', 'fecha', 'hora'],
+    });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Registros");
+    XLSX.writeFile(wb, "registros-casinow.xlsx");
+});
+
+/* Tabla resumen solicitudes para admin */
+function recargarTablaAdmin() {
+    // Muestra resumen + tabla registros
+    const table = document.getElementById('resume-table');
+    const tbody = table.getElementsByTagName('tbody')[0];
+    tbody.innerHTML = '';
+    if(registrosSolicitudes.length === 0){
+        table.style.display = 'none';
+        document.getElementById('download-excel-btn').disabled = true;
+        document.getElementById('admin-summary').style.display = '';
+        document.getElementById('admin-summary').textContent = "Sin registros de solicitudes aún.";
+        return;
+    }
+    registrosSolicitudes.slice().reverse().forEach(reg=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+            `<td>${reg.nombre}</td><td>${reg.rut}</td><td>${reg.cargo}</td><td>${reg.servicio}</td><td>${reg.fecha}</td><td>${reg.hora}</td>`;
+        tbody.appendChild(tr);
+    });
+    table.style.display = '';
+    document.getElementById('download-excel-btn').disabled = false;
+    // Contar solicitudes por tipo
+    const totales = {Desayuno:0, Almuerzo:0, Cena:0};
+    registrosSolicitudes.forEach(r => { if(totales[r.servicio]!=null) totales[r.servicio]++; });
+    document.getElementById('admin-summary').innerHTML =
+        `<b>Totales de solicitudes</b>:<br>
+        🥐 Desayuno: <b>${totales.Desayuno}</b> | 🍛 Almuerzo: <b>${totales.Almuerzo}</b> | 🍽️ Cena: <b>${totales.Cena}</b>`;
+    document.getElementById('admin-summary').style.display = '';
+}
+
+/* ---- Mensajes breves ---- */
+function showError(id, msg){
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.style.display = '';
+}
+function showSuccess(id, msg){
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.style.display = '';
+    setTimeout(()=>{ el.style.display='none';}, 3200);
+}
+
+/* ---- Persistencia local (Browser) ---- */
+function cargarDesdeLocalStorage() {
+    try {
+        let usuarios = JSON.parse(localStorage.getItem('usuariosAutorizados')||'[]');
+        usuariosAutorizados = usuarios.map(u => ({
+            nombre: u.nombre,
+            rut: normalizaRut(u.rut),
+            cargo: u.cargo
+        }));
+    } catch(e) { usuariosAutorizados = []; }
+    try {
+        registrosSolicitudes = JSON.parse(localStorage.getItem('registrosSolicitudes')||'[]');
+    } catch(e) { registrosSolicitudes = []; }
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{
+    cargarDesdeLocalStorage();
+    recargarTablaAdmin();
+    recargarDashboardAdmin();
+});
+
+/* Dashboard Admin */
+function recargarDashboardAdmin(){
+    const ahora = new Date();
+    const hoy = ahora.toISOString().substr(0,10);
+    let totales = {Desayuno:0, Almuerzo:0, Cena:0};
+    let todayByTipo = {
+        Desayuno: [], Almuerzo: [], Cena: []
+    };
+    registrosSolicitudes.forEach(r=>{
+        if(totales[r.servicio]!=null) totales[r.servicio]++;
+        if(r.fecha === hoy && todayByTipo[r.servicio]) todayByTipo[r.servicio].push(r);
+    });
+
+    // Visualización de totales dashboard
+    const iconos = {Desayuno:'🥐', Almuerzo:'🍛', Cena:'🍽️'};
+    const dashboardTotals = document.getElementById("dashboard-totals");
+    dashboardTotals.innerHTML = '';
+    for(const k of ['Desayuno','Almuerzo','Cena']){
+        const d = document.createElement('div');
+        d.className = 'dashboard-total';
+        d.innerHTML = `${iconos[k]} <br>${k}<br><span style="font-size:1.5rem">${totales[k]}</span>`;
+        dashboardTotals.appendChild(d);
+    }
+
+    // Dashboard seleccionable de trabajadores
+    const dashboardServicioSelect = document.getElementById("dashboard-servicio-select");
+    const tipo = dashboardServicioSelect.value || 'Desayuno';
+    document.getElementById("dashboard-servicio-tipo").textContent = tipo;
+    const ul = document.getElementById("dashboard-list");
+    ul.innerHTML = '';
+    let todayList = todayByTipo[tipo].sort((a,b)=>a.nombre.localeCompare(b.nombre));
+    if(!todayList.length){
+        const li = document.createElement('li');
+        li.textContent = "Sin consumos registrados hoy.";
+        ul.appendChild(li);
+        return;
+    }
+    todayList.forEach(reg=>{
+        const li = document.createElement('li');
+        li.textContent = `${reg.nombre} (${reg.rut}) - ${reg.hora}`;
+        ul.appendChild(li);
+    });
+}
+document.getElementById("dashboard-servicio-select").addEventListener('change', recargarDashboardAdmin);
+
+/* Si admin inicia sesión, refrescar/mostrar tabla auto */
+document.getElementById('admin-panel').addEventListener('click', function(){ recargarTablaAdmin(); recargarDashboardAdmin(); });
+document.getElementById('admin-panel').addEventListener('keyup', function(){ recargarTablaAdmin(); recargarDashboardAdmin(); });
+
+</script>
+</body>
+</html>
